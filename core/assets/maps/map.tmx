@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="20" height="20" tilewidth="16" tileheight="16">
+ <tileset firstgid="1" name="pokeset" tilewidth="16" tileheight="16">
+  <image source="pokeset.png" width="128" height="15971"/>
+  <tile id="5">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="6">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="7">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="12">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="13">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="14">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="20">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="21">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+  <tile id="23">
+   <properties>
+    <property name="blocked" value=""/>
+   </properties>
+  </tile>
+ </tileset>
+ <layer name="ground" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJy1lFEKgCAQRNf0t5Cgrtkp6twZEcTiurOtfTwQdJ4OipGIooNtJjryzZ59Lu67SOQD8QUhGxiP7420NghePh8r69BsLTcWJrAf0ncprB99rU7SWDuP5NR8yN0k0NfKo29Bc1qyaOfWea0dtDnr+0Dvtoez1sOS7ckg8Nd+3v+ZcwLvHA0q
+  </data>
+ </layer>
+ <layer name="foreground" width="20" height="20">
+  <data encoding="base64" compression="zlib">
+   eJxjYBgFAwnYgZhjoB0xCkbBKBgFZAAATWAAEA==
+  </data>
+ </layer>
+ <objectgroup name="objects" width="20" height="20">
+  <object x="129" y="65" width="14" height="14"/>
+ </objectgroup>
+</map>
