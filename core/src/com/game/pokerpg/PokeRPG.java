@@ -11,6 +11,8 @@ import com.game.pokerpg.screens.Splash;
 
 public class PokeRPG extends Game {
 
+	public static final String TITLE = "PokeRPG", VERSION = "0.0.0.0";
+	
 	@Override
 	public void create () {
 		setScreen(new Splash());
