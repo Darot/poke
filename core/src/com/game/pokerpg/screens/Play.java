@@ -21,6 +21,7 @@ public class Play implements Screen {
 	private OrthographicCamera camera;
 
 	private Player player;
+	private Player player2;
 	
 	@Override
 	public void render(float delta) {
@@ -35,6 +36,7 @@ public class Play implements Screen {
 		renderer.getSpriteBatch().begin();
 		renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get("ground"));
 		player.draw(renderer.getSpriteBatch()); // render the Player
+		player2.draw(renderer.getSpriteBatch()); // render the Player
 		renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get("foreground"));
 		renderer.getSpriteBatch().end();
 		
@@ -57,7 +59,9 @@ public class Play implements Screen {
 		camera = new OrthographicCamera();
 		
 		player = new Player(new Sprite(new Texture("img/left1.png")), (TiledMapTileLayer) map.getLayers().get(0) );
+		player2 = new Player(new Sprite(new Texture("img/left1.png")), (TiledMapTileLayer) map.getLayers().get(0) );
 		player.setPosition(17 * player.getCollisionLayer().getTileWidth(), (player.getCollisionLayer().getTileHeight()) * player.getCollisionLayer().getTileHeight() );
+		player2.setPosition(18 * player2.getCollisionLayer().getTileWidth(), (player2.getCollisionLayer().getTileHeight()) * player2.getCollisionLayer().getTileHeight() );
 		
 		Gdx.input.setInputProcessor(player);
 	}
