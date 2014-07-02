@@ -11,6 +11,6 @@ public class DesktopLauncher {
 		config.width = 1280;
 		config.height = 720;
 		config.useGL30 = true;
-		config.title = "pokeRPG";
+		config.title = PokeRPG.TITLE + "  v" + PokeRPG.VERSION;
 	}
 }
