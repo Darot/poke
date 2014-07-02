@@ -11,7 +11,7 @@ import com.game.pokerpg.screens.Splash;
 
 public class PokeRPG extends Game {
 
-	public static final String TITLE = "PokeRPG", VERSION = "0.0.0.0.realyEarly!";
+	public static final String TITLE = "PokeRPG", VERSION = "0.0.0.0.reallyEarly";
 	
 	@Override
 	public void create () {

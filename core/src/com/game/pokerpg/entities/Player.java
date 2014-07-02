@@ -9,12 +9,12 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 
-public class Player extends Sprite implements InputProcessor {
+public class Player extends Sprite  {
 
 	/** the movement velocity */
 	private Vector2 velocity = new Vector2();
 	
-	private float speed = 60 * 2, gravity = 0;
+	private float speed = 60 * 2, gravity = 0 ;
 	
 	private TiledMapTileLayer collisionLayer;
 	
@@ -123,6 +123,14 @@ public class Player extends Sprite implements InputProcessor {
 	public void setVelocity(Vector2 velocity) {
 		this.velocity = velocity;
 	}
+	
+	public void setVelocityX(int velocity) {
+		this.velocity.x = velocity;
+	}
+	
+	public void setVelocityY(int velocity) {
+		this.velocity.y = velocity;
+	}
 
 	public float getSpeed() {
 		return speed;
@@ -146,78 +154,6 @@ public class Player extends Sprite implements InputProcessor {
 
 	public void setCollisionLayer(TiledMapTileLayer collisionLayer) {
 		this.collisionLayer = collisionLayer;
-	}
-
-	@Override
-	public boolean keyDown(int keycode) {
-		switch(keycode){
-		case Keys.W:
-			velocity.y = speed;
-			break;
-		case Keys.S:
-			velocity.y = -speed;
-			break;
-		case Keys.A:
-			velocity.x = -speed;
-			break;
-		case Keys.D:
-			velocity.x = +speed;
-			break;
-		}
-		return true;
-	}
-
-	@Override
-	public boolean keyUp(int keycode) {
-		switch(keycode){
-		case Keys.A:
-		case Keys.D:
-			velocity.x = 0;
-			break;
-		case Keys.W:
-		case Keys.S:
-			velocity.y = 0;
-			break;
-		}
-		return true;
-	}
-
-	@Override
-	public boolean keyTyped(char character) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean touchDragged(int screenX, int screenY, int pointer) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean mouseMoved(int screenX, int screenY) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean scrolled(int amount) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
-	
+	}	
 	
 }
