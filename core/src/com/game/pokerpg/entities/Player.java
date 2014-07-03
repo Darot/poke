@@ -1,5 +1,7 @@
 package com.game.pokerpg.entities;
 
+import org.json.simple.JSONObject;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
@@ -8,9 +10,15 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
 
 public class Player extends Sprite  {
 
+	private static final String EXCHANGE_NAME = "pokeCom";
+	
+	
 	/** the movement velocity */
 	private Vector2 velocity = new Vector2();
 	
@@ -29,7 +37,34 @@ public class Player extends Sprite  {
 		super.draw(spriteBatch);
 	}
 	
+	public void sendMovement(){
+		//Packing the informations into a JSON Object
+		JSONObject msg = new JSONObject();
+		msg.put("playerId", "testid1");
+		msg.put("velocityY", velocity.y);
+		msg.put("velocityX", velocity.x);
+		
+		ConnectionFactory factory = new ConnectionFactory();
+		factory.setHost("localhost");
+		try{
+			//Socket setup
+			Connection connection = factory.newConnection();
+			Channel channel = connection.createChannel();
+			
+			channel.exchangeDeclare(EXCHANGE_NAME, "topic");
+			
+			//Send Movement
+			channel.basicPublish(EXCHANGE_NAME, "player.movement", null, msg.toJSONString().getBytes());
+			connection.close();
+			
+		}catch(Exception e){
+			System.out.println("Something went horribly wrong!");
+		}
+		
+	}
+	
 	public void update(float delta){
+		sendMovement();
 		//apply gravity
 		velocity.y -= gravity *delta;
 		
