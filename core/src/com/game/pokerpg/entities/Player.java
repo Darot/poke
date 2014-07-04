@@ -1,5 +1,7 @@
 package com.game.pokerpg.entities;
 
+import java.io.IOException;
+
 import org.json.simple.JSONObject;
 
 import com.badlogic.gdx.Gdx;
@@ -16,8 +18,11 @@ import com.rabbitmq.client.ConnectionFactory;
 
 public class Player extends Sprite  {
 
+	//Socket Objects
 	private static final String EXCHANGE_NAME = "pokeCom";
-	
+	private ConnectionFactory factory = new ConnectionFactory();
+	private Channel channel;
+	private Connection connection;
 	
 	/** the movement velocity */
 	private Vector2 velocity = new Vector2();
@@ -29,6 +34,7 @@ public class Player extends Sprite  {
 	public Player(Sprite sprite, TiledMapTileLayer collisionLayer){
 		super(sprite);
 		this.collisionLayer = collisionLayer;
+		createSocket();
 	}
 	
 	@Override
@@ -37,25 +43,17 @@ public class Player extends Sprite  {
 		super.draw(spriteBatch);
 	}
 	
-	public void sendMovement(){
-		//Packing the informations into a JSON Object
-		JSONObject msg = new JSONObject();
-		msg.put("playerId", "testid1");
-		msg.put("velocityY", velocity.y);
-		msg.put("velocityX", velocity.x);
+	public void createSocket(){
 		
-		ConnectionFactory factory = new ConnectionFactory();
-		factory.setHost("localhost");
+		factory.setHost("78.111.76.54");
 		try{
 			//Socket setup
-			Connection connection = factory.newConnection();
-			Channel channel = connection.createChannel();
+			connection = factory.newConnection();
+			channel = connection.createChannel();
 			
 			channel.exchangeDeclare(EXCHANGE_NAME, "topic");
 			
 			//Send Movement
-			channel.basicPublish(EXCHANGE_NAME, "player.movement", null, msg.toJSONString().getBytes());
-			connection.close();
 			
 		}catch(Exception e){
 			System.out.println("Something went horribly wrong!");
@@ -63,8 +61,20 @@ public class Player extends Sprite  {
 		
 	}
 	
+	public void sendMovement(){
+		//Packing the informations into a JSON Object
+		JSONObject msg = new JSONObject();
+		msg.put("playerId", "testid1");
+		msg.put("velocityY", velocity.y);
+		msg.put("velocityX", velocity.x);
+		try{
+			channel.basicPublish(EXCHANGE_NAME, "player.movement", null, msg.toJSONString().getBytes());
+		}catch(Exception e){
+			System.out.println("no Connection!!!");
+		}
+	}
+	
 	public void update(float delta){
-		sendMovement();
 		//apply gravity
 		velocity.y -= gravity *delta;
 		
@@ -161,10 +171,12 @@ public class Player extends Sprite  {
 	
 	public void setVelocityX(int velocity) {
 		this.velocity.x = velocity;
+		sendMovement();
 	}
 	
 	public void setVelocityY(int velocity) {
 		this.velocity.y = velocity;
+		sendMovement();
 	}
 
 	public float getSpeed() {
@@ -190,5 +202,14 @@ public class Player extends Sprite  {
 	public void setCollisionLayer(TiledMapTileLayer collisionLayer) {
 		this.collisionLayer = collisionLayer;
 	}	
+	
+	public void dispose() {
+		try{
+			connection.close();
+		}
+		catch(Exception e){
+		System.out.println("no connection to Close");
+		}
+	}
 	
 }

@@ -159,6 +159,14 @@ public class Play implements Screen, InputProcessor{
 		inputMultiplexer.addProcessor(this);
 		inputMultiplexer.addProcessor(stage); //add stage an input processor to access UI elements
 		Gdx.input.setInputProcessor(inputMultiplexer);
+		
+		//create a receiver socket
+		new Thread(new Runnable(){
+			@Override
+			public void run(){
+				//factory.setHost("localhost")
+			}
+		}).start();
 	}
 	
 
@@ -185,6 +193,7 @@ public class Play implements Screen, InputProcessor{
 		map.dispose();
 		renderer.dispose();
 		stage.dispose();
+		player.dispose();
 	}
 	
 	//Input Processor methods:
