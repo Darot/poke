@@ -18,6 +18,8 @@ import com.rabbitmq.client.ConnectionFactory;
 
 public class Player extends Sprite  {
 
+	private String playerId = "admin123";
+	
 	//Socket Objects
 	private static final String EXCHANGE_NAME = "pokeCom";
 	private ConnectionFactory factory = new ConnectionFactory();
@@ -34,7 +36,7 @@ public class Player extends Sprite  {
 	public Player(Sprite sprite, TiledMapTileLayer collisionLayer){
 		super(sprite);
 		this.collisionLayer = collisionLayer;
-		createSocket();
+
 	}
 	
 	@Override
@@ -43,36 +45,36 @@ public class Player extends Sprite  {
 		super.draw(spriteBatch);
 	}
 	
-	public void createSocket(){
-		
-		factory.setHost("78.111.76.54");
-		try{
-			//Socket setup
-			connection = factory.newConnection();
-			channel = connection.createChannel();
-			
-			channel.exchangeDeclare(EXCHANGE_NAME, "topic");
-			
-			//Send Movement
-			
-		}catch(Exception e){
-			System.out.println("Something went horribly wrong!");
-		}
-		
-	}
-	
-	public void sendMovement(){
-		//Packing the informations into a JSON Object
-		JSONObject msg = new JSONObject();
-		msg.put("playerId", "testid1");
-		msg.put("velocityY", velocity.y);
-		msg.put("velocityX", velocity.x);
-		try{
-			channel.basicPublish(EXCHANGE_NAME, "player.movement", null, msg.toJSONString().getBytes());
-		}catch(Exception e){
-			System.out.println("no Connection!!!");
-		}
-	}
+//	public void createSocket(){
+//		
+//		factory.setHost("localhost");
+//		try{
+//			//Socket setup
+//			connection = factory.newConnection();
+//			channel = connection.createChannel();
+//			
+//			channel.exchangeDeclare(EXCHANGE_NAME, "topic");
+//			
+//			//Send Movement
+//			
+//		}catch(Exception e){
+//			System.out.println("Something went horribly wrong!");
+//		}
+//		
+//	}
+//	
+//	public void sendMovement(){
+//		//Packing the informations into a JSON Object
+//		JSONObject msg = new JSONObject();
+//		msg.put("playerId", playerId);
+//		msg.put("velocityY", velocity.y);
+//		msg.put("velocityX", velocity.x);
+//		try{
+//			channel.basicPublish(EXCHANGE_NAME, "player.movement", null, msg.toJSONString().getBytes());
+//		}catch(Exception e){
+//			System.out.println("no Connection!!!");
+//		}
+//	}
 	
 	public void update(float delta){
 		//apply gravity
@@ -171,12 +173,12 @@ public class Player extends Sprite  {
 	
 	public void setVelocityX(int velocity) {
 		this.velocity.x = velocity;
-		sendMovement();
+		//sendMovement();
 	}
 	
 	public void setVelocityY(int velocity) {
 		this.velocity.y = velocity;
-		sendMovement();
+		//sendMovement();
 	}
 
 	public float getSpeed() {
@@ -203,13 +205,13 @@ public class Player extends Sprite  {
 		this.collisionLayer = collisionLayer;
 	}	
 	
-	public void dispose() {
-		try{
-			connection.close();
-		}
-		catch(Exception e){
-		System.out.println("no connection to Close");
-		}
+
+	public String getPlayerId() {
+		return playerId;
+	}
+
+	public void setPlayerId(String playerId) {
+		this.playerId = playerId;
 	}
 	
 }
