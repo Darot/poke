@@ -1,6 +1,7 @@
 package com.game.pokerpg.network;
 
-import org.json.simple.JSONObject;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -43,19 +44,19 @@ public class PublisherSocket {
 		 * }
 		 */
 		try{
-			channel.basicPublish(EXCHANGE_NAME, "player.movement", null, msg.toJSONString().getBytes());
+			channel.basicPublish(EXCHANGE_NAME, "player.movement", null, msg.toString().getBytes());
 		}catch(Exception e){
 			System.out.println("no Connection!!!");
 		}
 	}
 	
 	
-	public void sendPlayerJoined(String playerId, String Mapname){
+	public void sendPlayerJoined(String playerId, String Mapname) throws JSONException{
 		JSONObject msg = new JSONObject();
 		msg.put("playerId", playerId);
 		msg.put("mapName", Mapname);
 		try{
-			channel.basicPublish(EXCHANGE_NAME, "player.join", null, msg.toJSONString().getBytes());
+			channel.basicPublish(EXCHANGE_NAME, "player.join", null, msg.toString().getBytes());
 		}catch(Exception e){
 			System.out.println("no Connection!!!");
 		}
@@ -65,11 +66,11 @@ public class PublisherSocket {
 	/*
 	 * Requesting information from the server
 	 */
-	public void getPlayers(String mapName){
+	public void getPlayers(String mapName) throws JSONException{
 		JSONObject mapname = new JSONObject();
 		mapname.put("mapName", mapName);
 		try{
-			channel.basicPublish(EXCHANGE_NAME, "player.get.all", null, mapname.toJSONString().getBytes());
+			channel.basicPublish(EXCHANGE_NAME, "player.get.all", null, mapname.toString().getBytes());
 		}catch(Exception e){
 			System.out.println("no Connection!!!");
 		}

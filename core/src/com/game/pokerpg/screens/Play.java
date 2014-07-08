@@ -5,8 +5,9 @@ import java.util.Map;
 
 import com.game.pokerpg.entities.*;
 
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -62,8 +63,7 @@ public class Play implements Screen, InputProcessor{
 	private ConnectionFactory factory = new ConnectionFactory();
 	private Connection connection;
 	private Channel channel;
-	private JSONParser parser = new JSONParser();
-	
+	private String serverIP = "localhost";
 	
 	//Publisher Socket
 	PublisherSocket pubSocket = new PublisherSocket();
@@ -191,10 +191,11 @@ public class Play implements Screen, InputProcessor{
 		new Thread(new Runnable(){
 			@Override
 			public void run(){
-				factory.setHost("localhost");
+				factory.setHost(serverIP);
 				String mapTopic = "map." + mapName;
 				
 				try{
+					//create the socket
 					connection = factory.newConnection();
 					channel = connection.createChannel();
 					channel.exchangeDeclare(EXCHANGE_NAME, "topic");
@@ -211,17 +212,26 @@ public class Play implements Screen, InputProcessor{
 					while(true){
 						QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 						String message = new String(delivery.getBody());
-						System.out.println(message);
-						JSONObject msg = (JSONObject) parser.parse(message);
+						JSONArray msgArray = null;
+						JSONObject msg = null;
+						//System.out.println(message);
+						
+						//Check if single information or array of information
+						if(message.contains("[")){
+							msgArray = new JSONArray(message);
+						}else {
+							msg = new JSONObject(message);
+						}
+						
 						String routingKey = delivery.getEnvelope().getRoutingKey();
 						if(routingKey.contains("map")){
 							routingKey = "map";
 						}
 						
-						
+						//Handle messages
 						switch(routingKey){
 						case("map"):
-							//updateOtherPlayers(msg);
+							updatePlayersOnMap(msgArray);
 							break;
 						case("player.movement"):
 							//moveOtherPlayer(msg);
@@ -237,14 +247,24 @@ public class Play implements Screen, InputProcessor{
 		}).start();
 		
 		pubSocket.createSocket();
-		pubSocket.getPlayers(mapName);
+		
+		//Get all players on the map
+		try {
+			pubSocket.getPlayers(mapName);
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
-	
-	public void updateOtherPlayers(JSONObject movement){
+	public void updatePlayersOnMap(JSONArray players){
 		
 	}
 	
-	public void moveOtherPlayer(JSONObject movement){
+	public void updateOtherPlayer(JSONObject movement){
+		
+	}
+	
+	public void moveOtherPlayer(JSONObject movement) throws JSONException{
 		if( !(movement.get("playerId").equals(player.getPlayerId())) ){
 			
 		}else {
@@ -279,7 +299,7 @@ public class Play implements Screen, InputProcessor{
 	}
 	
 	//Input Processor methods:
-	public void sendMovement(){
+	public void sendMovement() throws JSONException{
 		JSONObject msg = new JSONObject();
 		msg.put("velocityX", player.getVelocity().x);
 		msg.put("velocityY", player.getVelocity().y);
@@ -295,19 +315,38 @@ public class Play implements Screen, InputProcessor{
 		switch(keycode){
 		case Keys.W:
 			player.setVelocityY((int)player.getSpeed());
-			sendMovement();
+			try {
+				sendMovement();
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
 			break;
 		case Keys.S:
 			player.setVelocityY(- (int)player.getSpeed());
-			sendMovement();
+			try {
+				sendMovement();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			break;
 		case Keys.A:
 			player.setVelocityX(- (int)player.getSpeed());
-			sendMovement();
+			try {
+				sendMovement();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			break;
 		case Keys.D:
 			player.setVelocityX((int)player.getSpeed());
-			sendMovement();
+			try {
+				sendMovement();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			break;
 		}
 		return true;
@@ -320,12 +359,22 @@ public class Play implements Screen, InputProcessor{
 		case Keys.A:
 		case Keys.D:
 			player.setVelocityX(0);
-			sendMovement();
+			try {
+				sendMovement();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			break;
 		case Keys.W:
 		case Keys.S:
 			player.setVelocityY(0);
-			sendMovement();
+			try {
+				sendMovement();
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			break;
 		}
 		return true;
