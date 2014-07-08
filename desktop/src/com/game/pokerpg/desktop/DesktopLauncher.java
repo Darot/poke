@@ -10,7 +10,7 @@ public class DesktopLauncher {
 		new LwjglApplication(new PokeRPG(), config);
 		config.width = 1280;
 		config.height = 720;
-		config.useGL30 = true;
+		config.useGL30 = false;
 		config.title = PokeRPG.TITLE + "  v" + PokeRPG.VERSION;
 	}
 }

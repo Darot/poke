@@ -221,10 +221,10 @@ public class Play implements Screen, InputProcessor{
 						
 						switch(routingKey){
 						case("map"):
-							updateOtherPlayers(msg);
+							//updateOtherPlayers(msg);
 							break;
 						case("player.movement"):
-							moveOtherPlayer(msg);
+							//moveOtherPlayer(msg);
 							break;
 						}
 					}
