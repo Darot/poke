@@ -18,7 +18,7 @@ import com.rabbitmq.client.ConnectionFactory;
 
 public class Player extends Sprite  {
 
-	private String playerId = "admin123";
+	private String trainername = null;
 	
 	//Socket Objects
 	private static final String EXCHANGE_NAME = "pokeCom";
@@ -33,9 +33,10 @@ public class Player extends Sprite  {
 	
 	private TiledMapTileLayer collisionLayer;
 	
-	public Player(Sprite sprite, TiledMapTileLayer collisionLayer){
+	public Player(Sprite sprite, TiledMapTileLayer collisionLayer, String trainername){
 		super(sprite);
 		this.collisionLayer = collisionLayer;
+		this.trainername = trainername;
 
 	}
 	
@@ -45,36 +46,6 @@ public class Player extends Sprite  {
 		super.draw(spriteBatch);
 	}
 	
-//	public void createSocket(){
-//		
-//		factory.setHost("localhost");
-//		try{
-//			//Socket setup
-//			connection = factory.newConnection();
-//			channel = connection.createChannel();
-//			
-//			channel.exchangeDeclare(EXCHANGE_NAME, "topic");
-//			
-//			//Send Movement
-//			
-//		}catch(Exception e){
-//			System.out.println("Something went horribly wrong!");
-//		}
-//		
-//	}
-//	
-//	public void sendMovement(){
-//		//Packing the informations into a JSON Object
-//		JSONObject msg = new JSONObject();
-//		msg.put("playerId", playerId);
-//		msg.put("velocityY", velocity.y);
-//		msg.put("velocityX", velocity.x);
-//		try{
-//			channel.basicPublish(EXCHANGE_NAME, "player.movement", null, msg.toJSONString().getBytes());
-//		}catch(Exception e){
-//			System.out.println("no Connection!!!");
-//		}
-//	}
 	
 	public void update(float delta){
 		//apply gravity
@@ -206,12 +177,8 @@ public class Player extends Sprite  {
 	}	
 	
 
-	public String getPlayerId() {
-		return playerId;
+	public String getTrainername() {
+		return trainername;
 	}
 
-	public void setPlayerId(String playerId) {
-		this.playerId = playerId;
-	}
-	
 }

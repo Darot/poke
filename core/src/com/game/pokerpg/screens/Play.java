@@ -1,8 +1,10 @@
 package com.game.pokerpg.screens;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
+import com.game.pokerpg.PokeRPG;
 import com.game.pokerpg.entities.*;
 
 import org.json.JSONArray;
@@ -48,8 +50,9 @@ public class Play implements Screen, InputProcessor{
 
 	private Player player;
 	private Vector2 playerPosition;
-	//Map for the other players on the map
-	Map<String, OtherPlayer> players = new HashMap<String, OtherPlayer>();
+	//Map for the other players on the map	
+	//Trainername / PlayerObject
+	Map<String, Player> players = new HashMap<String, Player>();
 	
 	//UI Elements
 	private Stage stage;
@@ -84,6 +87,15 @@ public class Play implements Screen, InputProcessor{
 		renderer.getSpriteBatch().begin();
 		renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get("ground"));
 		player.draw(renderer.getSpriteBatch()); // render the Player
+		
+		//render other players
+		Iterator it = players.entrySet().iterator();
+		while(it.hasNext()){
+			Map.Entry pairs = (Map.Entry)it.next();
+			Player otherPlayer = (Player) pairs.getValue();
+			otherPlayer.draw(renderer.getSpriteBatch());
+		}
+		
 		renderer.renderTileLayer((TiledMapTileLayer) map.getLayers().get("foreground"));
 		renderer.getSpriteBatch().end();
 		
@@ -175,10 +187,10 @@ public class Play implements Screen, InputProcessor{
 		camera = new OrthographicCamera();
 		
 		//SetupPlayers
-		player = new Player(new Sprite(new Texture("img/left1.png")), (TiledMapTileLayer) map.getLayers().get(0) );
+		player = new Player(new Sprite(new Texture("img/left1.png")), (TiledMapTileLayer) map.getLayers().get(0), "Moschmosch" );
 		playerPosition = new Vector2(17 * player.getCollisionLayer().getTileWidth(), (player.getCollisionLayer().getTileHeight()) * player.getCollisionLayer().getTileHeight());
 		player.setPosition(playerPosition.x, playerPosition.y );
-		System.out.println(playerPosition);
+		//System.out.println(playerPosition);
 		
 		
 		//SetInputProcessor to this Screen
@@ -214,7 +226,7 @@ public class Play implements Screen, InputProcessor{
 						String message = new String(delivery.getBody());
 						JSONArray msgArray = null;
 						JSONObject msg = null;
-						//System.out.println(message);
+						System.out.println(message);
 						
 						//Check if single information or array of information
 						if(message.contains("[")){
@@ -231,16 +243,26 @@ public class Play implements Screen, InputProcessor{
 						//Handle messages
 						switch(routingKey){
 						case("map"):
-							updatePlayersOnMap(msgArray);
+							final JSONArray msgA = msgArray;
+							final Play g = Play.this;
+							Gdx.app.postRunnable(new Runnable() {
+
+								@Override
+								public void run() {
+									g.updatePlayersOnMap(msgA);
+								}	
+							});
 							break;
+							
 						case("player.movement"):
-							//moveOtherPlayer(msg);
+							moveOtherPlayer(msg);
 							break;
 						}
 					}
 					
 				}catch(Exception e){
 					System.out.println(e.getStackTrace());
+					System.out.println(e.getMessage());
 					System.out.println("creepy shit happened!");
 				}			
 			}
@@ -258,15 +280,34 @@ public class Play implements Screen, InputProcessor{
 	}
 	public void updatePlayersOnMap(JSONArray players){
 		
-	}
-	
-	public void updateOtherPlayer(JSONObject movement){
-		
+		//iterate through JSONArray and create player Objects
+		for(int i=0; i < players.length(); i++){
+			try {
+				//create a other player from JSON
+				String trainername = players.getJSONObject(i).get("trainername").toString();
+				if(trainername.equals(player.getTrainername())){
+					continue; //dont draw self again
+				}
+				int x = new Integer (players.getJSONObject(i).get("coordx").toString());
+				int y = new Integer (players.getJSONObject(i).get("coordy").toString());
+				//create player Object
+				Player otherPlayer = new Player(new Sprite(new Texture("img/left1.png")), (TiledMapTileLayer) map.getLayers().get(0), trainername );
+				Vector2 position = new Vector2(y * otherPlayer.getCollisionLayer().getTileWidth(), (otherPlayer.getCollisionLayer().getTileHeight()) * otherPlayer.getCollisionLayer().getTileHeight());
+				otherPlayer.setPosition(position.x, position.y );
+				//add player to map
+				this.players.put(trainername, otherPlayer);
+			} catch (JSONException e) {
+				e.printStackTrace();
+				System.out.println(e.getMessage());
+			}
+		}
 	}
 	
 	public void moveOtherPlayer(JSONObject movement) throws JSONException{
-		if( !(movement.get("playerId").equals(player.getPlayerId())) ){
-			
+		if( !(movement.get("trainername").equals(player.getTrainername())) ){
+			Player otherPlayer = players.get(movement.get("trainername"));
+			otherPlayer.setVelocityX(movement.getInt("velocityX"));
+			otherPlayer.setVelocityY(movement.getInt("velocityY"));
 		}else {
 			System.out.println("equals");
 		}
@@ -303,7 +344,7 @@ public class Play implements Screen, InputProcessor{
 		JSONObject msg = new JSONObject();
 		msg.put("velocityX", player.getVelocity().x);
 		msg.put("velocityY", player.getVelocity().y);
-		msg.put("playerId", player.getPlayerId());
+		msg.put("trainername", player.getTrainername());
 		
 		pubSocket.sendPlayerMovement(msg);
 	}

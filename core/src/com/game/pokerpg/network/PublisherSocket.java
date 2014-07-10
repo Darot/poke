@@ -51,9 +51,9 @@ public class PublisherSocket {
 	}
 	
 	
-	public void sendPlayerJoined(String playerId, String Mapname) throws JSONException{
+	public void sendPlayerJoined(String trainername, String Mapname) throws JSONException{
 		JSONObject msg = new JSONObject();
-		msg.put("playerId", playerId);
+		msg.put("trainername", trainername);
 		msg.put("mapName", Mapname);
 		try{
 			channel.basicPublish(EXCHANGE_NAME, "player.join", null, msg.toString().getBytes());
