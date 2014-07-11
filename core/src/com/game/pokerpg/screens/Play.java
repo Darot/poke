@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.ws.rs.core.MediaType;
+
 import com.game.pokerpg.PokeRPG;
 import com.game.pokerpg.entities.*;
 
@@ -31,6 +33,8 @@ import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.WebResource;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -269,6 +273,9 @@ public class Play implements Screen, InputProcessor{
 		}).start();
 		
 		pubSocket.createSocket();
+		
+		WebResource service = Client.create().resource( "http://localhost:8080/rest" );
+		System.out.println( service.path( "message" ).accept( MediaType.TEXT_PLAIN ).get( String.class ) );
 		
 		//Get all players on the map
 		try {
